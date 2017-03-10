@@ -75,7 +75,13 @@ var App = React.createClass({
           <p>You also get the <strong>is-disabled</strong> CSS class so you can style it.</p>
         </Collapsible>
 
-
+        <Collapsible
+          trigger="onOpen/onClose callbacks"
+          onOpen={() => alert("I'm being opened")}
+          onClose={() => alert("I'm being closed")}
+        >
+          <p>This one tells you when it's being open or closed.</p>
+        </Collapsible>
 
       </div>
     );

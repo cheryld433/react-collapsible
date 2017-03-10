@@ -223,6 +223,23 @@ var App = _react2.default.createClass({
           ),
           ' CSS class so you can style it.'
         )
+      ),
+      _react2.default.createElement(
+        _Collapsible2.default,
+        {
+          trigger: 'onOpen/onClose callbacks',
+          onOpen: function onOpen() {
+            return alert("I'm being opened");
+          },
+          onClose: function onClose() {
+            return alert("I'm being closed");
+          }
+        },
+        _react2.default.createElement(
+          'p',
+          null,
+          'This one tells you when it\'s being open or closed.'
+        )
       )
     );
   }
@@ -19386,11 +19403,14 @@ var Collapsible = _react2.default.createClass({
     contentInnerClassName: _react2.default.PropTypes.string,
     accordionPosition: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.number]),
     handleTriggerClick: _react2.default.PropTypes.func,
+    onOpen: _react2.default.PropTypes.func,
+    onClose: _react2.default.PropTypes.func,
     trigger: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.element]),
     triggerWhenOpen: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.element]),
     triggerDisabled: _react2.default.PropTypes.bool,
     lazyRender: _react2.default.PropTypes.bool,
-    overflowWhenOpen: _react2.default.PropTypes.oneOf(['hidden', 'visible', 'auto', 'scroll', 'inherit', 'initial', 'unset'])
+    overflowWhenOpen: _react2.default.PropTypes.oneOf(['hidden', 'visible', 'auto', 'scroll', 'inherit', 'initial', 'unset']),
+    triggerSibling: _react2.default.PropTypes.element
   },
 
   //If no transition time or easing is passed then default to this
@@ -19408,7 +19428,10 @@ var Collapsible = _react2.default.createClass({
       triggerOpenedClassName: '',
       contentOuterClassName: '',
       contentInnerClassName: '',
-      className: ''
+      className: '',
+      triggerSibling: null,
+      onOpen: function onOpen() {},
+      onClose: function onClose() {}
     };
   },
 
@@ -19516,7 +19539,7 @@ var Collapsible = _react2.default.createClass({
       shouldSwitchAutoOnNextCycle: true,
       height: this.refs.inner.offsetHeight,
       overflow: 'hidden'
-    });
+    }, this.props.onClose);
   },
 
   openCollapsible: function openCollapsible() {
@@ -19525,7 +19548,7 @@ var Collapsible = _react2.default.createClass({
       transition: 'height ' + this.props.transitionTime + 'ms ' + this.props.easing,
       isClosed: false,
       hasBeenOpened: true
-    });
+    }, this.props.onOpen);
   },
 
   makeResponsive: function makeResponsive() {
@@ -19548,6 +19571,18 @@ var Collapsible = _react2.default.createClass({
         transition: 'height ' + _this2.props.transitionTime + 'ms ' + _this2.props.easing
       });
     }, 50);
+  },
+
+  renderNonClickableTriggerElement: function renderNonClickableTriggerElement() {
+    if (this.props.triggerSibling) {
+      return _react2.default.createElement(
+        'span',
+        { className: this.props.classParentString + "__trigger-sibling" },
+        this.props.triggerSibling
+      );
+    }
+
+    return null;
   },
 
   render: function render() {
@@ -19586,6 +19621,7 @@ var Collapsible = _react2.default.createClass({
         { className: triggerClassName.trim(), onClick: this.handleTriggerClick },
         trigger
       ),
+      this.renderNonClickableTriggerElement(),
       _react2.default.createElement(
         'div',
         { className: this.props.classParentString + "__contentOuter" + ' ' + this.props.contentOuterClassName, ref: 'outer', style: dropdownStyle },
